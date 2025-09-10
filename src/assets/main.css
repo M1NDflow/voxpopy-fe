@@ -1,0 +1,28 @@
+@import './design-system.css';
+
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-hero);
+}
+
+/* Layout */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Utility classes */
+.container {
+  width: 100%;
+  max-width: 980px;
+  background-color: transparent;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+}
