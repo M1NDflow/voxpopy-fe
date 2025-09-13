@@ -4,7 +4,7 @@ import MainContent from './components/MainContent.vue'
 import Footer from './components/Footer.vue'
 
 export default {
-  name: 'App',
+  name: 'ViaDemocratia',
   components: {
     Navbar,
     MainContent,
