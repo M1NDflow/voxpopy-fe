@@ -1,7 +1,10 @@
 <template>
     <main class="main-wrapper" ref="messagesContainer" :class="{ 'has-responses': messageStore.messages.length > 0 }">
-        <WelcomeMessage v-if="messageStore.messages.length === 0" />
-        <MessagesList v-else @new-message="scrollToTop" />
+
+        <template v-if="!messageStore.isResetting">
+            <WelcomeMessage v-if="messageStore.messages.length === 0" />
+            <MessagesList v-else @new-message="scrollToTop" :key="messageStore.listVersion" />
+        </template>
     </main>
 </template>
 
@@ -18,9 +21,8 @@ export default {
     },
     setup() {
         const messageStore = useMessageStore();
-
         return {
-            messageStore
+            messageStore,
         };
     },
     methods: {

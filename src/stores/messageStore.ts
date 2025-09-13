@@ -8,21 +8,19 @@ export const useMessageStore = defineStore('message', () => {
   const messages = ref<Message[]>([])
   const isLoading = ref<boolean>(false)
   const error = ref<string | null>(null)
+  const isResetting = ref(false)
+  const listVersion = ref(0)
 
-  // === Getters ===
-  const lastMessage = computed<Message | null>(() => messages.value.at(-1) || null)
-  const getIsLoading = computed<boolean>(() => isLoading.value)
-
-  function getMessageById(id: number): Message | null {
+  function getMessageById(id: string): Message | null {
     return messages.value.find(m => m.id === id) || null
   }
 
   // Check if a specific message is loading
-  function isMessageLoading(id: number): boolean {
+  function isMessageLoading(id: string): boolean {
     return getMessageById(id)?.isLoading || false
   }
 
-  function updateMessageById(id: number, update: Partial<Message>) {
+  function updateMessageById(id: string, update: Partial<Message>) {
     const index = messages.value.findIndex(m => m.id === id);
     if (index !== -1) {
       messages.value[index] = {
@@ -34,7 +32,7 @@ export const useMessageStore = defineStore('message', () => {
 
   // === Actions ===
   async function sendMessage(text: string): Promise<void> {
-    const messageId = Date.now()
+    const messageId = crypto.randomUUID()
     isLoading.value = true
 
     const message: Message = {
@@ -48,6 +46,7 @@ export const useMessageStore = defineStore('message', () => {
     let sid = localStorage.getItem('vp_session_id');
     if (!sid) { sid = crypto.randomUUID(); localStorage.setItem('vp_session_id', sid); }
 
+    const index = messages.value.findIndex(m => m.id === messageId);
     try {
       const response = await fetch('https://automations.m1ndflow.com/webhook/via-democratia', {
         method: 'POST',
@@ -55,20 +54,19 @@ export const useMessageStore = defineStore('message', () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.text) : messages.value.slice(index - 2, index).map(m => m.text),
           input: text,
           session_id: sid
         })
       });
-
       if (!response.ok) {
         throw new Error(`API request failed with status ${response.status}`);
       }
 
-      const json = await response.json();
-      const responseData: ApiResponse = json[0].output;
+      const json = await response.json() as ApiResponse;
 
       updateMessageById(messageId, {
-        responseData: responseData,
+        responseData: json,
         isLoading: false
       });
     }
@@ -76,15 +74,16 @@ export const useMessageStore = defineStore('message', () => {
       error.value = 'Failed to send message'
       console.error(err)
 
-      if (messageId !== -1) {
+      if (messageId) {
         const message = getMessageById(messageId)
         if (message) {
           updateMessageById(messageId, {
             responseData: {
               response: 'Failed to get response',
               documents: [],
-              videos: []
+              segments: []
             },
+            isLoading: false
           });
         }
       }
@@ -94,25 +93,37 @@ export const useMessageStore = defineStore('message', () => {
   }
   // Clear all messages and reset state
   function $reset() {
+    // Create a new array reference to ensure reactivity
     messages.value = []
     isLoading.value = false
     error.value = null
   }
+
+  async function resetChat() {
+    isResetting.value = true
+    try {
+      localStorage.removeItem('vp_session_id') // clear cache first
+      $reset()                                   // then clear store
+      listVersion.value++                        // force remount of list
+    } finally {
+      isResetting.value = false
+    }
+  }
+
 
   return {
     // state
     messages,
     isLoading,
     error,
+    isResetting,
+    listVersion,
 
-    // getters
-    lastMessage,
-    getIsLoading,
     isMessageLoading,
     getMessageById,
     // actions
     sendMessage,
-    $reset
+    resetChat
   }
 }, {
   persist: true

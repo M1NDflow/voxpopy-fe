@@ -1,19 +1,21 @@
 export interface ApiResponse {
   response: string;
   documents: Document[];
-  videos: Video[];
+  segments: Segment[];
 }
 
 export interface Document {
   id: string;
-  title: string;
-  description: string;
+  title: string | null;
+  summary: string | null;
+  document_url: string | null;
+
 }
 
-export interface Video {
+export interface Segment {
   id: string;
-  title: string;
-  description: string;
+  title: string | null;
+  description: string | null;
 }
 
 // Example usage in a function:

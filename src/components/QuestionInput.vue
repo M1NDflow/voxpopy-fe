@@ -6,12 +6,7 @@
                 @keydown.enter.shift.exact.prevent="addNewline"></textarea>
             <button class="send-button" @click="handleSubmit" :disabled="!isSendEnabled" :aria-label="buttonLabel">
                 <div>
-                    <svg class="send-icon" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"
-                        preserveAspectRatio="none">
-                        <path
-                            d="M6.16634 13.6663V3.52051L1.49967 8.18717L0.333008 6.99967L6.99967 0.333008L13.6663 6.99967L12.4997 8.18717L7.83301 3.52051V13.6663H6.16634Z"
-                            fill="currentColor" />
-                    </svg>
+                    <PaperAirplaneIcon class="send-icon" />
                 </div>
             </button>
         </div>
@@ -22,12 +17,16 @@
     </div>
 </template>
 
-<script lang=“ts”>
+<script lang="ts">
 import { defineComponent } from 'vue'
-import { useMessageStore } from '@/stores/messageStore.ts';
+import { useMessageStore } from '@/stores/messageStore';
+import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
 
 export default defineComponent({
     name: 'QuestionInput',
+    components: {
+        PaperAirplaneIcon
+    },
     data() {
         return {
             inputValue: '',
@@ -175,6 +174,12 @@ export default defineComponent({
     box-shadow: var(--shadow-sm);
     cursor: pointer;
     transition: opacity var(--transition-fast);
+}
+
+.send-button .div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .send-button:disabled {

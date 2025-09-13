@@ -1,7 +1,7 @@
 import { ApiResponse } from "./api";
 
 export interface Message {
-    id: number;
+    id: string;
     text: string;
     isLoading?: boolean;
     timestamp: Date;

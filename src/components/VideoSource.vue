@@ -1,24 +1,21 @@
 <template>
     <div class="video-card" @click="handleClick">
+        <div v-if="!!(seg?.playback_id)" class="video-thumbnail">
+            <img :src="`https://image.mux.com/${seg.playback_id}/thumbnail.jpg?time=${Math.floor(seg.start_second || 0)}`"
+                alt="Video thumbnail" />
+        </div>
         <div class="video-info">
             <h3 class="video-title">{{ video.title }}</h3>
-            <p class="video-description">{{ video.description }}</p>
-            <div class="video-meta">
-                <span class="pill"> {{ video.author }}</span>
-                <span class="pill"> {{ video.date }}</span>
-                <span class="pill"> {{ video.time }}</span>
-                <span class="pill"> {{ video.group }}</span>
-            </div>
-        </div>
-        <div class="video-thumbnail">
-            <img :src="video.thumbnail" alt="Video thumbnail" />
+            <p class="video-description">{{ seg?.context_aware_summary.slice(0, 200) ?? "" }} ...</p>
         </div>
     </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, computed, onMounted } from 'vue'
+import { useVideoModalStore } from '@/stores/modalStore'
 
-export default {
+export default defineComponent({
     name: 'VideoSource',
     props: {
         video: {
@@ -26,13 +23,53 @@ export default {
             required: true
         }
     },
+    setup(props) {
+        const store = useVideoModalStore()
+
+        const segId = computed(() => props.video?.id as string | undefined)
+        const seg = computed(() => (segId.value ? store.segById[segId.value] : undefined))
+        const isLoading = computed(() => (segId.value ? !!store.segLoading[segId.value] : false))
+
+        function prefetch() {
+            if (segId.value) store.ensureSegment(segId.value)
+        }
+
+        function handleClick() {
+            if (!segId.value) {
+                console.warn('[VideoSource] Missing video.id')
+                return
+            }
+            // Open the shared modal and let it render the same cached segment
+            store.openSegmentModal(segId.value)
+        }
+
+        function formatDate(d?: Date | string | null) {
+            if (!d) return '—'
+            const dt = typeof d === 'string' ? new Date(d) : d
+            return dt.toLocaleDateString()
+        }
+
+        onMounted(() => {
+            const id = (props.video as any)?.id
+            if (id) {
+                // cached + deduped in store
+                prefetch()
+            }
+        })
+
+        return { seg, isLoading, prefetch, handleClick, formatDate }
+    },
     methods: {
         handleClick() {
-            this.$emit('open', { id: this.id, type: this.type, url: this.url })
+            const modal = useVideoModalStore()
+            if (!this.video?.id) {
+                console.warn('[VideoSource] Missing video.id')
+                return
+            }
+            modal.openSegmentModal(this.video.id) // open modal for this segment id
         }
     }
-
-}
+})
 </script>
 
 <style scoped>
@@ -53,7 +90,6 @@ export default {
 .video-info {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     gap: var(--spacing-xs);
 }
 
@@ -77,8 +113,9 @@ export default {
 .video-thumbnail {
     position: relative;
     width: 200px;
+    aspect-ratio: 16/9;
     overflow: hidden;
-    border-radius: var(--radius-md);
+    border-radius: var(--border-radius-md);
     flex-shrink: 0;
 }
 

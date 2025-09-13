@@ -1,25 +1,30 @@
 <template>
-    <button class="reset-button" @click="handleReset">
+    <button class="reset-button" @click="handleReset" :disabled="isResetting">
         <div class="reset-button-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                <path d="M3 3v5h5"></path>
-            </svg>
+            <PencilSquareIcon v-if="!isResetting" />
+            <span v-else class="loading-spinner"></span>
         </div>
-        <p>New Chat</p>
+        <p>{{ isResetting ? 'Resetting...' : 'New Chat' }}</p>
     </button>
 </template>
 
 <script setup lang="ts">
+import { ref, nextTick } from 'vue'
 import { useMessageStore } from '@/stores/messageStore'
+import { PencilSquareIcon } from '@heroicons/vue/24/solid'
 
 const messageStore = useMessageStore()
+const isResetting = ref(false)
 
 const handleReset = async () => {
     if (confirm('Are you sure you want to start a new chat? This will clear all message history.')) {
-        messageStore.$reset()
-        localStorage.removeItem('vp_session_id')
+        isResetting.value = true
+        try {
+            await messageStore.resetChat()
+            await nextTick()
+        } finally {
+            isResetting.value = false
+        }
     }
 }
 </script>
@@ -29,7 +34,7 @@ const handleReset = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
     padding: 8px 16px;
     background-color: var(--color-primary-dark);
     color: white;
@@ -38,12 +43,13 @@ const handleReset = async () => {
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    transition: background-color 0.2s ease, transform 0.1s ease, opacity 0.2s ease;
     height: 40px;
+    opacity: 0.9;
 }
 
 .reset-button:hover:not(:disabled) {
-    opacity: 0.9;
+    opacity: 1;
     transform: translateY(-1px);
 }
 
@@ -60,10 +66,27 @@ const handleReset = async () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 16px;
+    height: 16px;
 }
 
 .reset-button svg {
+    width: 100%;
+    height: 100%;
+}
+
+.loading-spinner {
     width: 16px;
     height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }
 </style>

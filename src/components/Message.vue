@@ -1,7 +1,7 @@
 <template>
     <div class="message container">
         <!-- Header: User Message -->
-        <h2 class="message-header">{{ message.text }}</h2>
+        <h2 class="message-header">{{ message?.text || '' }}</h2>
 
         <template v-if="message.isLoading">
             <div class="loading-state">
@@ -13,15 +13,18 @@
             <!-- Tabs -->
             <div class="tabs">
                 <button :class="{ active: activeTab === 'response' }" @click="activeTab = 'response'">
-                    Réponse
+                    <Bars3CenterLeftIcon class="icon" />
+                    <p>Réponse</p>
                 </button>
-                <button v-if="message.responseData?.videos?.length > 0" :class="{ active: activeTab === 'videos' }"
+                <button v-if="message.responseData?.segments?.length > 0" :class="{ active: activeTab === 'videos' }"
                     @click="activeTab = 'videos'">
-                    Vidéos
+                    <VideoCameraIcon class="icon" />
+                    <p>Vidéos</p>
                 </button>
                 <button v-if="message.responseData?.documents?.length > 0"
                     :class="{ active: activeTab === 'documents' }" @click="activeTab = 'documents'">
-                    Documents
+                    <DocumentTextIcon class="icon" />
+                    <p>Documents</p>
                 </button>
             </div>
 
@@ -33,28 +36,27 @@
                     </p>
 
                     <div class="source-cards-wrapper"
-                        v-if="message.responseData?.videos?.length > 0 || message.responseData?.documents?.length > 0">
+                        v-if="message.responseData?.segments?.length > 0 || message.responseData?.documents?.length > 0">
                         <p class="sources-footer">
                             Sources ({{ message.responseData?.documents.length }} Documents, {{
-                                message.responseData?.videos.length }} Vidéos)
+                                message.responseData?.segments.length }} Vidéos)
                         </p>
                         <div class="source-cards-responses">
-                            <ResponseSource v-for="(vid, i) in message.responseData?.videos" :key="'vid-' + i"
-                                :type="'video'" :title="vid.title" @open="handleOpen" />
-                            <ResponseSource v-for="(doc, i) in message.responseData?.documents" :key="'doc-' + i"
-                                :type="'document'" :title="doc.title" />
+                            <ResponseSource v-for="(vid, i) in message.responseData?.segments" :key="vid.id"
+                                :id="vid.id" :type="'video'" :title="vid.title" :url="vid.url" @open="handleOpen" />
+                            <ResponseSource v-for="(doc, i) in message.responseData?.documents" :key="doc.id"
+                                :id="doc.id" :type="'document'" :title="doc.title" :url="doc.document_url"
+                                @open="handleOpen" />
                         </div>
                     </div>
                 </template>
-
-                <template v-else-if="activeTab === 'videos' && message.responseData?.videos?.length > 0">
-                    <VideoTab />
+                <template v-else-if="activeTab === 'videos' && message.responseData?.segments?.length > 0">
+                    <VideoTab :messageId="messageId" />
                 </template>
-
                 <template v-else-if="activeTab === 'documents' && message.responseData?.documents?.length > 0">
-                    <DocumentTab />
+                    <DocumentTab :messageId="messageId" />
                 </template>
-                <VideoModal :visible="videoModalVisible" @close="closeModal" />
+                <VideoModal v-if="videoModalVisible" :visible="true" @close="closeModal" />
             </div>
 
         </template>
@@ -69,19 +71,22 @@ import DocumentTab from './DocumentTab.vue'
 import VideoModal from './VideoModal.vue'
 import { defineComponent } from 'vue'
 import { useMessageStore } from '@/stores/messageStore'
+import { Bars3CenterLeftIcon, DocumentTextIcon, VideoCameraIcon } from '@heroicons/vue/24/solid'
+import { useVideoModalStore } from '@/stores/modalStore'
 
 export default defineComponent({
     name: 'Message',
-    components: { ResponseSource, VideoTab, DocumentTab, VideoModal, LoadingShimmer },
+    components: { ResponseSource, VideoTab, DocumentTab, VideoModal, LoadingShimmer, Bars3CenterLeftIcon, DocumentTextIcon, VideoCameraIcon },
     props: {
         messageId: {
-            type: [Number, String],
+            type: String,
             required: true
         },
     },
     setup() {
         const messageStore = useMessageStore();
-        return { messageStore };
+        const modalStore = useVideoModalStore();
+        return { messageStore, modalStore };
     },
     computed: {
         message() {
@@ -96,14 +101,17 @@ export default defineComponent({
         }
     },
     methods: {
-        handleOpen(payload: any) {
+        handleOpen(payload: { id: string; type: 'video' | 'document'; url?: string }) {
             if (payload.type === 'video') {
+                // open the store-driven modal for this segment id
+                this.modalStore.openSegmentModal(payload.id)
                 this.videoModalVisible = true
-            } else if (payload.type === 'document') {
+            } else if (payload.type === 'document' && payload.url) {
                 window.open(payload.url, '_blank')
             }
         },
         closeModal() {
+            this.modalStore.closeModal()
             this.videoModalVisible = false
         }
     },
@@ -145,6 +153,10 @@ export default defineComponent({
     font-weight: 500;
     padding: var(--spacing-sm);
     cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
     border-bottom: 2px solid transparent;
     border-radius: 0px;
     transition: border-color 0.2s;
