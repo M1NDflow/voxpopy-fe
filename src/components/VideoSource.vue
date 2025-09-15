@@ -6,7 +6,14 @@
         </div>
         <div class="video-info">
             <h3 class="video-title">{{ video.title }}</h3>
-            <p class="video-description">{{ seg?.context_aware_summary.slice(0, 200) ?? "" }} ...</p>
+            <p class="video-description">{{ (seg?.context_aware_summary ?? "").slice(0, 200) }} ...</p>
+            <div class="video-meta">
+                <Pill :icon="CalendarIcon" tag="Séance" :description="formatSegmentDate(seg?.seance_date)" />
+                <Pill v-if="seg.cue_type == 'VOTING' || seg.speaker_name" :icon="UserIcon" tag="Intervenant"
+                    :description="seg.cue_type === 'VOTING' ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
+                <Pill v-if="seg.political_group" :icon="TagIcon" tag="Groupe politique"
+                    :description="seg.political_group || 'Inconnu'" />
+            </div>
         </div>
     </div>
 </template>
@@ -14,9 +21,13 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue'
 import { useVideoModalStore } from '@/stores/modalStore'
+import Pill from './Pill.vue'
+import { CalendarIcon, ClockIcon, UserIcon, TagIcon } from '@heroicons/vue/24/solid'
+import { formatSegmentDate } from '@/types/enriched_segments'
 
 export default defineComponent({
     name: 'VideoSource',
+    components: { Pill, CalendarIcon, ClockIcon, UserIcon, TagIcon },
     props: {
         video: {
             type: Object,
@@ -57,7 +68,7 @@ export default defineComponent({
             }
         })
 
-        return { seg, isLoading, prefetch, handleClick, formatDate }
+        return { seg, isLoading, prefetch, handleClick, formatDate, CalendarIcon, ClockIcon, UserIcon, TagIcon, formatSegmentDate }
     },
     methods: {
         handleClick() {
@@ -108,11 +119,10 @@ export default defineComponent({
     gap: var(--spacing-xs);
 }
 
-
-
 .video-thumbnail {
     position: relative;
     width: 200px;
+    max-height: 120px;
     aspect-ratio: 16/9;
     overflow: hidden;
     border-radius: var(--border-radius-md);

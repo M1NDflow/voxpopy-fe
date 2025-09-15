@@ -23,20 +23,14 @@
                                 </div>
 
                                 <div class="video-meta">
-                                    <Pill :icon="CalendarIcon" tag="Séance" :description="seg.seance_date.toLocaleDateString('fr-FR', {
-                                        day: '2-digit',
-                                        month: 'long',
-                                        year: 'numeric',
-                                        timeZone: 'Europe/Zurich'
-                                    })" />
-                                    <Pill :icon="ClockIcon" tag="Début de la séance" :description="seg.seance_date.toLocaleTimeString('fr-FR', {
-                                        hour: '2-digit',
-                                        minute: '2-digit',
-                                        timeZone: 'Europe/Zurich'
-                                    })" />
-                                    <Pill :icon="UserIcon" tag="Intervenant"
-                                        :description="seg.speaker_name || 'Inconnu'" />
-                                    <Pill :icon="TagIcon" tag="Groupe politique"
+                                    <Pill :icon="CalendarIcon" tag="Séance"
+                                        :description="formatSegmentDate(seg.seance_date)" />
+                                    <Pill :icon="ClockIcon" tag="Début de la séance"
+                                        :description="formatSegmentTime(seg.seance_date)" />
+                                    <Pill v-if="seg.cue_type == 'VOTING' || seg.speaker_name" :icon="UserIcon"
+                                        tag="Intervenant"
+                                        :description="seg.cue_type === 'VOTING' ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
+                                    <Pill v-if="seg.political_group" :icon="TagIcon" tag="Groupe politique"
                                         :description="seg.political_group || 'Inconnu'" />
                                 </div>
 
@@ -74,6 +68,7 @@ import { useVideoModalStore } from '@/stores/modalStore'
 import type { EnrichedSegment } from '@/types/enriched_segments'
 import { CalendarIcon, UserIcon, TagIcon, ClockIcon } from '@heroicons/vue/24/solid'
 import Pill from './Pill.vue'
+import { formatSegmentDate, formatSegmentTime } from '@/types/enriched_segments'
 import '@mux/mux-player'
 
 export default defineComponent({
@@ -101,7 +96,7 @@ export default defineComponent({
         }
     },
     setup() {
-        return { CalendarIcon, UserIcon, TagIcon, ClockIcon }
+        return { CalendarIcon, UserIcon, TagIcon, ClockIcon, formatSegmentDate, formatSegmentTime }
     },
     watch: {
         visible: {

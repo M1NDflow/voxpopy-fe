@@ -57,4 +57,6 @@ export const useVideoModalStore = defineStore('video-modal', () => {
         // data cache & loaders
         segById, segLoading, segError, ensureSegment, fetchSegment,
     }
+}, {
+    persist: true
 })
