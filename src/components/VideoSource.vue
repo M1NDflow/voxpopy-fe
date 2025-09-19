@@ -9,10 +9,10 @@
             <p class="video-description">{{ (seg?.context_aware_summary ?? "").slice(0, 200) }} ...</p>
             <div class="video-meta">
                 <Pill :icon="CalendarIcon" tag="Séance" :description="formatSegmentDate(seg?.seance_date)" />
-                <Pill v-if="seg.cue_type == 'VOTING' || seg.speaker_name" :icon="UserIcon" tag="Intervenant"
-                    :description="seg.cue_type === 'VOTING' ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
-                <Pill v-if="seg.political_group" :icon="TagIcon" tag="Groupe politique"
-                    :description="seg.political_group || 'Inconnu'" />
+                <Pill v-if="seg?.cue_type == 'VOTING' || seg?.speaker_name" :icon="UserIcon" tag="Intervenant"
+                    :description="seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu'" />
+                <Pill v-if="seg?.political_group" :icon="TagIcon" tag="Groupe politique"
+                    :description="seg?.political_group || 'Inconnu'" />
             </div>
         </div>
     </div>

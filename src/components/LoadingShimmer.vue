@@ -1,5 +1,7 @@
 <template>
     <div class="shimmer-wrapper">
+        <p class="shimmer-text">Réflexion {{ elapsedTime }}s</p>
+        <p class="shimmer-text"> · </p>
         <p class="shimmer-text">{{ currentPhrase }}</p>
     </div>
 </template>
@@ -17,7 +19,10 @@ export default {
                 'Lecture des documents...'
             ],
             index: 0,
-            intervalId: null
+            intervalId: null,
+            startTime: Date.now(),
+            elapsedTime: 0,
+            timerId: null
         };
     },
     computed: {
@@ -26,6 +31,7 @@ export default {
         }
     },
     mounted() {
+        // Start the phrase rotation
         this.intervalId = setInterval(() => {
             let newIndex;
             do {
@@ -33,9 +39,22 @@ export default {
             } while (newIndex === this.index && this.phrases.length > 1);
             this.index = newIndex;
         }, 2500); // Change every 2.5 seconds
+
+        // Start the timer
+        this.startTimer();
     },
     beforeUnmount() {
         clearInterval(this.intervalId);
+        clearInterval(this.timerId);
+    },
+    methods: {
+        startTimer() {
+            this.startTime = Date.now();
+            this.timerId = setInterval(() => {
+                const seconds = Math.floor((Date.now() - this.startTime) / 1000);
+                this.elapsedTime = seconds;
+            }, 1000);
+        }
     }
 };
 </script>
@@ -45,6 +64,7 @@ export default {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    gap: 4px;
 }
 
 .shimmer-text {

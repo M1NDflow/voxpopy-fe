@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import type { ApiResponse } from '@/types/api'
 import type { Message } from '@/types/message'
+import { streamSSE } from '../utils/stream'
 
 export const useMessageStore = defineStore('message', () => {
   // === State ===
@@ -10,6 +10,7 @@ export const useMessageStore = defineStore('message', () => {
   const error = ref<string | null>(null)
   const isResetting = ref(false)
   const listVersion = ref(0)
+  const highReasoningEffort = ref<boolean>(false)
 
   function getMessageById(id: string): Message | null {
     return messages.value.find(m => m.id === id) || null
@@ -38,7 +39,9 @@ export const useMessageStore = defineStore('message', () => {
     const message: Message = {
       id: messageId,
       text: text,
+      corrected_text: text,
       isLoading: true,
+      is_high_reasoning_effort: highReasoningEffort.value,
       timestamp: new Date()
     }
     messages.value.push(message)
@@ -47,27 +50,19 @@ export const useMessageStore = defineStore('message', () => {
     if (!sid) { sid = crypto.randomUUID(); localStorage.setItem('vp_session_id', sid); }
 
     const index = messages.value.findIndex(m => m.id === messageId);
+
     try {
-      const response = await fetch('https://automations.m1ndflow.com/webhook/via-democratia', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.text) : messages.value.slice(index - 2, index).map(m => m.text),
-          input: text,
-          session_id: sid
-        })
-      });
-      if (!response.ok) {
-        throw new Error(`API request failed with status ${response.status}`);
-      }
-
-      const json = await response.json() as ApiResponse;
-
-      updateMessageById(messageId, {
-        responseData: json,
-        isLoading: false
+      await streamSSE('https://voxpopy-agent.onrender.com/get-response', {
+        previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.corrected_text) : messages.value.slice(index - 2, index).map(m => m.corrected_text),
+        input: text,
+        session_id: sid,
+        is_reasoning_query: highReasoningEffort.value
+      }, (payload, done) => {
+        if (payload == null) {
+          updateMessageById(messageId, { isLoading: false });
+          return;
+        }
+        updateMessageById(messageId, { corrected_text: JSON.parse(payload).input, responseData: JSON.parse(payload), isLoading: !done });
       });
     }
     catch (err) {
@@ -118,7 +113,7 @@ export const useMessageStore = defineStore('message', () => {
     error,
     isResetting,
     listVersion,
-
+    highReasoningEffort,
     isMessageLoading,
     getMessageById,
     // actions

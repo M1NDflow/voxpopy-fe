@@ -1,9 +1,18 @@
 <template>
     <div class="container input-wrapper">
         <div class="question-input-wrapper">
-            <textarea ref="textAreaRef" v-model="inputValue" class="question-input" :placeholder="placeholder" :rows="1"
-                @input="adjustHeight" @keydown.enter.exact.prevent="handleSubmit"
-                @keydown.enter.shift.exact.prevent="addNewline"></textarea>
+            <div class="question-input-container">
+                <textarea ref="textAreaRef" v-model="inputValue" class="question-input" :placeholder="placeholder"
+                    :rows="1" @input="adjustHeight" @keydown.enter.exact.prevent="handleSubmit"
+                    @keydown.enter.shift.exact.prevent="addNewline"></textarea>
+                <div class="reasoning-toggle">
+                    <label class="toggle-label">
+                        <input type="checkbox" v-model="messageStore.highReasoningEffort" class="toggle-input">
+                        <span class="toggle-slider"></span>
+                        <span class="toggle-text">Mode raisonnement avancé</span>
+                    </label>
+                </div>
+            </div>
             <button class="send-button" @click="handleSubmit" :disabled="!isSendEnabled" :aria-label="buttonLabel">
                 <div>
                     <PaperAirplaneIcon class="send-icon" />
@@ -14,6 +23,8 @@
             ViaDemocratia peut commettre des erreurs. Il est recommandé de vérifier les informations importantes. Les
             informations ne sont en aucun cas des conseils politiques
         </p>
+        <p class="version">Frontend V1.5.0 Backend V1.4.0</p>
+
     </div>
 </template>
 
@@ -152,8 +163,73 @@ export default defineComponent({
     line-height: 1.5;
 }
 
+.question-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    align-items: flex-start;
+}
+
 .input-wrapper {
     padding: 0 var(--spacing-xl);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.reasoning-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+}
+
+.toggle-input {
+    display: none;
+}
+
+.toggle-slider {
+    position: relative;
+    display: inline-block;
+    width: 30px;
+    height: 20px;
+    background-color: var(--color-border);
+    border-radius: 20px;
+    transition: background-color 0.2s;
+}
+
+.toggle-slider::before {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    left: 2px;
+    top: 2px;
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+.toggle-input:checked+.toggle-slider {
+    background-color: var(--color-primary-dark);
+}
+
+.toggle-input:checked+.toggle-slider::before {
+    transform: translateX(10px);
+}
+
+.toggle-text {
+    font-size: 0.8125rem;
+    font-weight: 500;
 }
 
 .send-icon {
@@ -197,5 +273,11 @@ export default defineComponent({
     color: var(--color-text-secondary);
     font-size: 0.75rem;
     padding: 0 var(--spacing-md);
+}
+
+.version {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.4rem;
 }
 </style>

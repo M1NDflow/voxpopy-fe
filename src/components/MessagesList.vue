@@ -4,11 +4,12 @@
   </div>
 </template>
 
-<script lang=“ts”>
+<script lang="ts">
 import { defineComponent } from 'vue'
 import { useMessageStore } from '@/stores/messageStore';
 import { nextTick } from 'vue';
 import Message from './Message.vue';
+import { ref } from 'vue';
 
 export default defineComponent({
   name: 'MessagesList',
@@ -17,11 +18,12 @@ export default defineComponent({
   },
   setup() {
     const messageStore = useMessageStore();
-    return { messageStore };
+    const messagesContainer = ref<HTMLElement | null>(null);
+    return { messageStore, messagesContainer };
   },
   methods: {
     scrollToBottom() {
-      const container = this.$refs.messagesContainer;
+      const container = this.messagesContainer.value;
       if (container) {
         container.scrollTop = container.scrollHeight;
       }
