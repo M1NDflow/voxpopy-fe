@@ -70,7 +70,7 @@ export default {
 .shimmer-text {
     font-size: 1rem;
     font-weight: 500;
-    background: linear-gradient(90deg, #999, #eee, #999);
+    background: linear-gradient(90deg, #999, #aaaaaa, #999);
     background-size: 300% 100%;
     background-clip: text;
     -webkit-background-clip: text;
