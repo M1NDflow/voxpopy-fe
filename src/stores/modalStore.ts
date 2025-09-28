@@ -7,17 +7,14 @@ import { fetchSegmentById } from '@/db/db'
 type ModalState = { id: string } | null
 
 export const useVideoModalStore = defineStore('video-modal', () => {
-    // which modal is open
     const modal = shallowRef<ModalState>(null)
 
-    // segment cache + status
     const segById: Record<string, EnrichedSegment | undefined> = reactive({})
     const segLoading: Record<string, boolean> = reactive({})
     const segError: Record<string, unknown> = reactive({})
     const segControllers: Record<string, AbortController | undefined> = reactive({})
 
     async function fetchSegment(id: string): Promise<EnrichedSegment> {
-        // cancel any in-flight fetch for this id
         segError[id] = null
         segLoading[id] = true
         segControllers[id]?.abort()
@@ -43,7 +40,7 @@ export const useVideoModalStore = defineStore('video-modal', () => {
 
     function openSegmentModal(id: string) {
         modal.value = { id }
-        void ensureSegment(id) // prefetch without blocking UI
+        void ensureSegment(id)
     }
 
     function closeModal() {
@@ -52,9 +49,7 @@ export const useVideoModalStore = defineStore('video-modal', () => {
     }
 
     return {
-        // modal state
         modal, openSegmentModal, closeModal,
-        // data cache & loaders
         segById, segLoading, segError, ensureSegment, fetchSegment,
     }
 }, {
