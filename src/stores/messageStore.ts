@@ -4,7 +4,6 @@ import type { Message } from '@/types/message'
 import { streamSSE } from '../utils/stream'
 
 export const useMessageStore = defineStore('message', () => {
-  // === State ===
   const messages = ref<Message[]>([])
   const isLoading = ref<boolean>(false)
   const error = ref<string | null>(null)
@@ -16,7 +15,6 @@ export const useMessageStore = defineStore('message', () => {
     return messages.value.find(m => m.id === id) || null
   }
 
-  // Check if a specific message is loading
   function isMessageLoading(id: string): boolean {
     return getMessageById(id)?.isLoading || false
   }
@@ -31,7 +29,6 @@ export const useMessageStore = defineStore('message', () => {
     }
   }
 
-  // === Actions ===
   async function sendMessage(text: string): Promise<void> {
     const messageId = crypto.randomUUID()
     isLoading.value = true
@@ -52,7 +49,7 @@ export const useMessageStore = defineStore('message', () => {
     const index = messages.value.findIndex(m => m.id === messageId);
 
     try {
-      await streamSSE('https://voxpopy-agent.onrender.com/get-response', {
+      await streamSSE('/api/get-response', {
         previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.corrected_text) : messages.value.slice(index - 2, index).map(m => m.corrected_text),
         input: text,
         session_id: sid,
@@ -62,7 +59,8 @@ export const useMessageStore = defineStore('message', () => {
           updateMessageById(messageId, { isLoading: false });
           return;
         }
-        updateMessageById(messageId, { corrected_text: JSON.parse(payload).input, responseData: JSON.parse(payload), isLoading: !done });
+        const parsed = JSON.parse(payload)
+        updateMessageById(messageId, { corrected_text: parsed.input, responseData: parsed, isLoading: !done });
       });
     }
     catch (err) {
@@ -86,9 +84,8 @@ export const useMessageStore = defineStore('message', () => {
       isLoading.value = false
     }
   }
-  // Clear all messages and reset state
+
   function $reset() {
-    // Create a new array reference to ensure reactivity
     messages.value = []
     isLoading.value = false
     error.value = null
@@ -97,9 +94,9 @@ export const useMessageStore = defineStore('message', () => {
   async function resetChat() {
     isResetting.value = true
     try {
-      localStorage.removeItem('vp_session_id') // clear cache first
-      $reset()                                   // then clear store
-      listVersion.value++                        // force remount of list
+      localStorage.removeItem('vp_session_id')
+      $reset()
+      listVersion.value++
     } finally {
       isResetting.value = false
     }
