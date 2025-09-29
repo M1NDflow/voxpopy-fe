@@ -55,12 +55,26 @@ export const useMessageStore = defineStore('message', () => {
         session_id: sid,
         is_reasoning_query: highReasoningEffort.value
       }, (payload, done) => {
+
         if (payload == null) {
           updateMessageById(messageId, { isLoading: false });
           return;
         }
-        const parsed = JSON.parse(payload)
-        updateMessageById(messageId, { corrected_text: parsed.input, responseData: parsed, isLoading: !done });
+
+        // ignore empty/keepalive/comment frames
+        if (typeof payload !== 'string' || !payload.trim() || payload.trim().startsWith(':')) {
+          return;
+        }
+        // parse safely
+        try {
+          const parsed = JSON.parse(payload);           // may throw on non-JSON
+          updateMessageById(messageId, {
+            corrected_text: parsed.input,
+            responseData: parsed,
+            isLoading: !done
+          });
+        } catch {
+        }
       });
     }
     catch (err) {
