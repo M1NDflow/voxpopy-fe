@@ -1,6 +1,6 @@
 <template>
   <footer class="footer">
-    <QuestionInput v-model="question" :placeholder="'Poser une question'" :button-label="'Envoyer la question'"
+    <QuestionInput v-model="question" :placeholder="$t('ask_a_question')" :button-label="'Envoyer la question'"
       @submit="handleSubmit" />
   </footer>
 </template>

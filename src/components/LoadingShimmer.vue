@@ -1,6 +1,6 @@
 <template>
     <div class="shimmer-wrapper">
-        <p class="shimmer-text">Réflexion {{ elapsedTime }}s</p>
+        <p class="shimmer-text">{{ $t('loading') }} {{ elapsedTime }}s</p>
         <p class="shimmer-text"> · </p>
         <p class="shimmer-text">{{ currentPhrase }}</p>
     </div>

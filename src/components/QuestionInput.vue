@@ -9,7 +9,7 @@
                     <label class="toggle-label">
                         <input type="checkbox" v-model="messageStore.highReasoningEffort" class="toggle-input">
                         <span class="toggle-slider"></span>
-                        <span class="toggle-text">Mode raisonnement avancé</span>
+                        <span class="toggle-text">{{ $t('reasoning_mode') }}</span>
                     </label>
                 </div>
             </div>
@@ -20,8 +20,7 @@
             </button>
         </div>
         <p class="disclaimer">
-            ViaDemocratia peut commettre des erreurs. Il est recommandé de vérifier les informations importantes. Les
-            informations ne sont en aucun cas des conseils politiques
+            {{ $t('disclaimer') }}
         </p>
         <p class="version">Frontend V1.5.0 Backend V1.4.0</p>
 
