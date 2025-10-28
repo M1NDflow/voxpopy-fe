@@ -1,19 +1,26 @@
 <template>
-    <div class="video-card" @click="handleClick">
-        <div v-if="!!(seg?.playback_id)" class="video-thumbnail">
-            <img :src="`https://image.mux.com/${seg.playback_id}/thumbnail.jpg?time=${Math.floor(seg.start_second || 0)}`"
-                alt="Video thumbnail" />
-        </div>
-        <div class="video-info">
+    <div class="video-source">
+        <div class="video-card" @click="handleClick">
             <h3 class="video-title">{{ video.title }}</h3>
-            <p class="video-description">{{ (seg?.context_aware_summary ?? "").slice(0, 200) }} ...</p>
-            <div class="video-meta">
-                <Pill :icon="CalendarIcon" tag="Séance" :description="formatSegmentDate(seg?.seance_date)" />
-                <Pill v-if="seg?.cue_type == 'VOTING' || seg?.speaker_name" :icon="UserIcon" tag="Intervenant"
-                    :description="seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu'" />
-                <Pill v-if="seg?.political_group" :icon="TagIcon" tag="Groupe politique"
-                    :description="seg?.political_group || 'Inconnu'" />
+            <div class="video-info">
+                <div v-if="!!(seg?.speaker_image_url)" class="video-thumbnail">
+                    <img :src="seg?.speaker_image_url" alt="Video thumbnail" />
+                </div>
+                <div v-else-if="!!(seg?.playback_id)" class="video-thumbnail">
+                    <img :src="`https://image.mux.com/${seg.playback_id}/thumbnail.jpg?time=${Math.floor(seg.start_second + 15 || 0)}`"
+                        alt="Video thumbnail" />
+                </div>
+                <p class="video-description">{{ (seg?.context_aware_summary ?? "").slice(0, 400) }} ...</p>
             </div>
+        </div>
+        <div class="video-meta">
+            <Pill v-if="seg?.cue_type == 'VOTING' || seg?.speaker_name" class="w-full" :icon="UserIcon"
+                tag="Intervenant"
+                :description="seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu'"
+                :url="seg?.speaker_url ?? ''" />
+            <Pill class="w-full" :icon="CalendarIcon" tag="Séance" :description="formatSegmentDate(seg?.seance_date)" />
+            <Pill v-if="seg?.political_group" class="w-full" :icon="TagIcon" tag="Groupe politique"
+                :description="seg?.political_group || 'Inconnu'" />
         </div>
     </div>
 </template>
@@ -86,12 +93,23 @@ export default defineComponent({
 <style scoped>
 .video-card {
     display: flex;
-    flex-direction: row;
-    gap: var(--spacing-lg);
-    justify-content: space-between;
-    padding: var(--spacing-md);
+    flex-direction: column;
+    gap: var(--spacing-xs);
     border-radius: var(--border-radius-md);
     cursor: pointer;
+    padding: var(--spacing-md);
+}
+
+.video-source {
+    display: flex;
+    flex-direction: column;
+}
+
+.video-meta {
+    display: flex;
+    flex-direction: row;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
 }
 
 .video-card:hover {
@@ -100,7 +118,7 @@ export default defineComponent({
 
 .video-info {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     gap: var(--spacing-xs);
 }
 
@@ -113,17 +131,11 @@ export default defineComponent({
     color: var(--color-text);
 }
 
-.video-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--spacing-xs);
-}
-
 .video-thumbnail {
     position: relative;
-    width: 200px;
+    width: 120px;
     max-height: 120px;
-    aspect-ratio: 16/9;
+    aspect-ratio: 1/1;
     overflow: hidden;
     border-radius: var(--border-radius-md);
     flex-shrink: 0;

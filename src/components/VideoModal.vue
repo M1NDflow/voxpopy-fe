@@ -28,8 +28,8 @@
                                     <Pill :icon="ClockIcon" tag="Début de la séance"
                                         :description="formatSegmentTime(seg.seance_date)" />
                                     <Pill v-if="seg.cue_type != 'SPEECH' || seg.speaker_name" :icon="UserIcon"
-                                        tag="Intervenant"
-                                        :description="seg.cue_type === 'VOTING' || seg.cue_type === 'CHAIR_FLOOR_CUE' ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
+                                        tag="Intervenant" :url="seg?.speaker_url ?? ''" :description="seg.cue_type === 'VOTING' || seg.cue_type === 'CHAIR_FLOOR_CUE'
+                                            ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
                                     <Pill v-if="seg.political_group" :icon="TagIcon" tag="Groupe politique"
                                         :description="seg.political_group || 'Inconnu'" />
                                 </div>

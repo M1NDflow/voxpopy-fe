@@ -1,9 +1,11 @@
 <template>
-    <div class="pill" role="note" :aria-label="`${tag} ${description}`">
+    <component :is="url ? 'a' : 'div'" class="pill" :class="{ clickable: !!url }" :role="url ? 'link' : 'note'"
+        :href="url || undefined" :target="isExternal ? '_blank' : undefined"
+        :rel="isExternal ? 'noopener noreferrer' : undefined" :aria-label="`${tag} ${description}`">
         <component v-if="icon" :is="icon" class="icon" />
         <span class="tag" v-if="tag">{{ tag }}</span>
         <span class="desc" v-if="description">{{ description }}</span>
-    </div>
+    </component>
 </template>
 
 <script lang="ts">
@@ -24,7 +26,16 @@ export default defineComponent({
             type: String,
             default: '',
         },
+        url: {
+            type: String,
+            default: '',
+        },
     },
+    computed: {
+        isExternal(): boolean {
+            return /^https?:\/\//i.test(this.url)
+        },
+    }
 })
 </script>
 
@@ -37,9 +48,25 @@ export default defineComponent({
     font-size: 0.75rem;
     white-space: nowrap;
 
-    display: inline-flex;
+    display: flex;
     align-items: center;
     gap: 6px;
+    text-decoration: none;
+    transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.pill.clickable {
+    cursor: pointer;
+}
+
+.pill.clickable:hover {
+    background-color: var(--surface-hover, rgba(0, 0, 0, 0.04));
+    border-color: var(--color-border-strong, var(--color-border));
+}
+
+.pill.clickable:focus-visible {
+    outline: 2px solid var(--color-focus, #5b9dd9);
+    outline-offset: 2px;
 }
 
 .icon {
@@ -54,6 +81,6 @@ export default defineComponent({
 }
 
 .desc {
-    opacity: 0.9;
+    color: var(--color-text-subtitle1);
 }
 </style>

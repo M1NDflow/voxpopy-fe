@@ -1,16 +1,18 @@
 
 export type EnrichedSegment = {
-    id: string
-    title: string | null
-    transcription: string | null
-    context_aware_summary: string | null
-    seance_date: Date | string | null
-    speaker_name: string
-    political_group: string
+    id: string,
+    title: string | null,
+    transcription: string | null,
+    context_aware_summary: string | null,
+    seance_date: Date | string | null,
+    speaker_name: string,
+    speaker_image_url: string,
+    speaker_url: string,
+    political_group: string,
     start_second: number,
     cue_type: string,
-    duration: number
-    type: string
+    duration: number,
+    type: string,
     playback_id: string
 }
 

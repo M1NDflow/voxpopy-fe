@@ -15,6 +15,8 @@ export async function fetchSegmentById(
       speaker:speaker (
         full_name,
         political_party,
+        image_url,
+        url,
         party_row:political_party ( party )
       )
     `, { count: 'exact' })
@@ -31,6 +33,8 @@ export async function fetchSegmentById(
         context_aware_summary: data.context_aware_summary,
         seance_date: data.seance?.datetime ? new Date(data.seance.datetime) : null,
         speaker_name: data.speaker?.full_name ?? '',
+        speaker_image_url: data.speaker?.image_url ?? '',
+        speaker_url: data.speaker?.url ?? '',
         political_group: data.speaker?.party_row?.party ?? '',
         cue_type: data.cue_type ?? '',
         start_second: data.start_seconds ?? 0,
