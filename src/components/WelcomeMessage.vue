@@ -1,8 +1,7 @@
 <template>
     <div class="welcome-message">
         <h1>
-            Posez-moi des questions sur une séance, un thème, la position des partis ou encore les interventions d’un
-            membre du conseil
+            Interrogez-moi sur une séance, un thème, un parti ou un membre du conseil
         </h1>
 
         <QuestionGrid />
@@ -11,19 +10,17 @@
             <a href="https://www.geneve.ch/autorites-administration/conseil-municipal/">
                 Le Conseil municipal de la Villede Genève
             </a>
-            est le parlement communal, composé de
+            est le parlement de la Ville de Genève. Il compte
             <a href="https://www.geneve.ch/autorites-administration/conseil-municipal/membres/">
                 80 membres
             </a>
-            élus pour cinq ans. Il représente la population et prend les grandes décisions politiques et financières de
-            la
-            Ville : adoption du budget, approbation des comptes, vote des crédits et des règlements. Ses séances
-            plénières
-            sont publiques et diffusées en direct sur Leman Bleu et en différé sur le site internet de la ville.
+            élus pour cinq ans. Il représente la population et vote le budget, les comptes, les crédits et les
+            règlements. Les séances sont publiques, diffusées en direct sur Léman Bleu puis en différé sur le site.
+
         </p>
         <p>
             Le projet Via Democratia vise à rendre ces débats plus accessibles afin de promouvoir notre démocratie. Ce
-            prototype fonctionne actuellement uniquement sur les données des sessions de
+            prototype couvre les séances de
             <a
                 href="https://www.geneve.ch/autorites-administration/conseil-municipal/seances-plenieres/session-04-02-2025">février</a>
             et
