@@ -15,8 +15,6 @@
         <p class="disclaimer">
             {{ $t('disclaimer') }}
         </p>
-        <p class="version">Frontend V1.5.0 Backend V1.4.0</p>
-
     </div>
 </template>
 
