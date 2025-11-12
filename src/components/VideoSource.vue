@@ -1,7 +1,24 @@
 <template>
     <div class="video-source">
+        <div class="video-title-speaker">
+            <h3>
+                <template v-if="seg?.speaker_url">
+                    <a :href="seg.speaker_url" class="speaker-link" target="_blank" rel="noopener noreferrer">
+                        {{ seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu' }}
+                    </a>
+                </template>
+                <template v-else>
+                    {{ seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu' }}
+                </template>
+                ·
+            </h3>
+            <h3 class="video-title-datetime">{{ formatSegmentTime(seg?.seance_date, seg?.start_second) }} · </h3>
+            <h3 class="video-title-political-group">( {{ seg?.political_group || 'Inconnu' }} )</h3>
+        </div>
+        <div class="video-title">
+            <h3 class="video-title-seance">{{ video.title }} · </h3>
+        </div>
         <div class="video-card" @click="handleClick">
-            <h3 class="video-title">{{ video.title }}</h3>
             <div class="video-info">
                 <div v-if="!!(seg?.speaker_image_url)" class="video-thumbnail">
                     <img :src="seg?.speaker_image_url" alt="Video thumbnail" />
@@ -13,15 +30,6 @@
                 <p class="video-description">{{ (seg?.context_aware_summary ?? "").slice(0, 400) }} ...</p>
             </div>
         </div>
-        <div class="video-meta">
-            <Pill v-if="seg?.cue_type == 'VOTING' || seg?.speaker_name" class="w-full" :icon="UserIcon"
-                tag="Intervenant"
-                :description="seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu'"
-                :url="seg?.speaker_url ?? ''" />
-            <Pill class="w-full" :icon="CalendarIcon" tag="Séance" :description="formatSegmentDate(seg?.seance_date)" />
-            <Pill v-if="seg?.political_group" class="w-full" :icon="TagIcon" tag="Groupe politique"
-                :description="seg?.political_group || 'Inconnu'" />
-        </div>
     </div>
 </template>
 
@@ -30,7 +38,7 @@ import { defineComponent, computed, onMounted } from 'vue'
 import { useVideoModalStore } from '@/stores/modalStore'
 import Pill from './Pill.vue'
 import { CalendarIcon, ClockIcon, UserIcon, TagIcon } from '@heroicons/vue/24/solid'
-import { formatSegmentDate } from '@/types/enriched_segments'
+import { formatSegmentTime, formatSegmentDate } from '@/types/enriched_segments'
 
 export default defineComponent({
     name: 'VideoSource',
@@ -75,7 +83,7 @@ export default defineComponent({
             }
         })
 
-        return { seg, isLoading, prefetch, handleClick, formatDate, CalendarIcon, ClockIcon, UserIcon, TagIcon, formatSegmentDate }
+        return { seg, isLoading, prefetch, handleClick, formatDate, CalendarIcon, ClockIcon, UserIcon, TagIcon, formatSegmentTime, formatSegmentDate }
     },
     methods: {
         handleClick() {
@@ -109,7 +117,7 @@ export default defineComponent({
     display: flex;
     flex-direction: row;
     gap: var(--spacing-xs);
-    padding: var(--spacing-xs);
+    padding: var(--spacing-xs) 0px;
 }
 
 .video-card:hover {
@@ -123,12 +131,16 @@ export default defineComponent({
 }
 
 .video-title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
 }
 
 .video-description {
-    color: var(--color-text);
+    color: var(--color-text-subtitle1);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-light);
 }
 
 .video-thumbnail {
@@ -146,5 +158,40 @@ export default defineComponent({
     height: 100%;
     object-fit: cover;
     display: block;
+}
+
+.video-title-datetime {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-subtitle1);
+    vertical-align: middle;
+}
+
+.video-title-speaker {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-primary-dark);
+    vertical-align: middle;
+}
+
+.speaker-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.speaker-link:hover,
+.speaker-link:focus-visible {
+    text-decoration: underline;
+}
+
+.video-title-political-group {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-subtitle1);
+    vertical-align: middle;
 }
 </style>
