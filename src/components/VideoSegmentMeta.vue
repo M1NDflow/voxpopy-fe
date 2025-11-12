@@ -21,7 +21,7 @@
       </h3>
     </div>
     <div class="video-title">
-      <h3 class="video-title-seance">{{ title }} · </h3>
+      <h3 class="video-title-seance">{{ title }}</h3>
     </div>
   </div>
 </template>
@@ -50,8 +50,9 @@ export default defineComponent({
   },
   setup(props) {
     const speakerLabel = computed(() => {
+      if (props.segment?.speaker_name) return props.segment?.speaker_name
       if (props.segment?.cue_type === 'VOTING') return 'Président(e)'
-      return props.segment?.speaker_name || 'Inconnu'
+      return 'Inconnu'
     })
     const dateLabel = computed(() => {
       if (!props.segment?.seance_date) return ''
@@ -66,7 +67,6 @@ export default defineComponent({
 .video-segment-meta {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
 }
 
 .video-date {

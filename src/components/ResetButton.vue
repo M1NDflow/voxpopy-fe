@@ -17,14 +17,12 @@ const messageStore = useMessageStore()
 const isResetting = ref(false)
 
 const handleReset = async () => {
-    if (confirm('Are you sure you want to start a new chat? This will clear all message history.')) {
-        isResetting.value = true
-        try {
-            await messageStore.resetChat()
-            await nextTick()
-        } finally {
-            isResetting.value = false
-        }
+    isResetting.value = true
+    try {
+        await messageStore.resetChat()
+        await nextTick()
+    } finally {
+        isResetting.value = false
     }
 }
 </script>
@@ -33,13 +31,14 @@ const handleReset = async () => {
 .reset-button {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 4px;
-    padding: 8px 16px;
-    background-color: var(--color-primary-dark);
-    color: white;
+    padding: 0px 4px;
+    color: var(--color-text);
     border: none;
-    border-radius: var(--border-radius-lg);
+    width: 100%;
+    background-color: var(--color-surface);
+    border-radius: var(--border-radius-sm);
     font-size: 0.9rem;
     font-weight: 500;
     cursor: pointer;
@@ -51,6 +50,7 @@ const handleReset = async () => {
 .reset-button:hover:not(:disabled) {
     opacity: 1;
     transform: translateY(-1px);
+    background-color: #f4f4f4;
 }
 
 .reset-button:active:not(:disabled) {

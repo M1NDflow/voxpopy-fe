@@ -1,7 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { Message } from '@/types/message'
+import type { ApiResponse, Document, Segment } from '@/types/api'
 import { streamSSE } from '../utils/stream'
+
+export type HistoryMessageRecord = {
+  id: string
+  input: string | null
+  response: string | null
+  documents: Document[] | null
+  segments: Segment[] | null
+  creation_date: string | null
+}
 
 export const useMessageStore = defineStore('message', () => {
   const messages = ref<Message[]>([])
@@ -10,6 +20,7 @@ export const useMessageStore = defineStore('message', () => {
   const isResetting = ref(false)
   const listVersion = ref(0)
   const highReasoningEffort = ref<boolean>(false)
+  const sessionId = ref<string | null>(null)
 
   function getMessageById(id: string): Message | null {
     return messages.value.find(m => m.id === id) || null
@@ -29,9 +40,19 @@ export const useMessageStore = defineStore('message', () => {
     }
   }
 
-  async function sendMessage(text: string): Promise<void> {
+  function setSession(id: string) {
+    sessionId.value = id
+  }
+
+  async function sendMessage(text: string, providedSessionId?: string): Promise<void> {
     const messageId = crypto.randomUUID()
     isLoading.value = true
+    if (providedSessionId) {
+      setSession(providedSessionId)
+    }
+    if (!sessionId.value) {
+      throw new Error('[messageStore] sessionId is required before sending messages.')
+    }
 
     const message: Message = {
       id: messageId,
@@ -43,8 +64,7 @@ export const useMessageStore = defineStore('message', () => {
     }
     messages.value.push(message)
 
-    let sid = localStorage.getItem('vp_session_id');
-    if (!sid) { sid = crypto.randomUUID(); localStorage.setItem('vp_session_id', sid); }
+    const sid = sessionId.value
 
     const index = messages.value.findIndex(m => m.id === messageId);
 
@@ -53,7 +73,7 @@ export const useMessageStore = defineStore('message', () => {
         previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.corrected_text) : messages.value.slice(index - 2, index).map(m => m.corrected_text),
         input: text,
         session_id: sid,
-        is_reasoning_query: highReasoningEffort.value
+        is_reasoning_query: highReasoningEffort.value,
       }, (payload, done) => {
 
         if (payload == null) {
@@ -108,12 +128,46 @@ export const useMessageStore = defineStore('message', () => {
   async function resetChat() {
     isResetting.value = true
     try {
-      localStorage.removeItem('vp_session_id')
       $reset()
+      sessionId.value = null
       listVersion.value++
     } finally {
       isResetting.value = false
     }
+  }
+
+  function hydrateFromHistory(
+    session: string,
+    rows: HistoryMessageRecord[]
+  ) {
+    sessionId.value = session
+    messages.value = rows.map(row => {
+      const docs = row.documents ?? []
+      const segs = row.segments ?? []
+      const responseText = row.response ?? ''
+
+      const responseData: ApiResponse | undefined =
+        responseText || docs.length || segs.length
+          ? {
+            response: responseText,
+            documents: docs,
+            segments: segs
+          }
+          : undefined
+
+      return {
+        id: row.id ?? crypto.randomUUID(),
+        text: row.input ?? '',
+        corrected_text: row.input ?? '',
+        isLoading: false,
+        timestamp: row.creation_date ? new Date(row.creation_date) : new Date(),
+        responseData
+      }
+    })
+
+    listVersion.value++
+    isLoading.value = false
+    error.value = null
   }
 
 
@@ -125,11 +179,14 @@ export const useMessageStore = defineStore('message', () => {
     isResetting,
     listVersion,
     highReasoningEffort,
+    sessionId,
     isMessageLoading,
     getMessageById,
+    setSession,
     // actions
     sendMessage,
-    resetChat
+    resetChat,
+    hydrateFromHistory
   }
 }, {
   persist: true

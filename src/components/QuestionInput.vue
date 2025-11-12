@@ -5,13 +5,6 @@
                 <textarea ref="textAreaRef" v-model="inputValue" class="question-input" :placeholder="placeholder"
                     :rows="1" @input="adjustHeight" @keydown.enter.exact.prevent="handleSubmit"
                     @keydown.enter.shift.exact.prevent="addNewline"></textarea>
-                <div class="reasoning-toggle">
-                    <label class="toggle-label">
-                        <input type="checkbox" v-model="messageStore.highReasoningEffort" class="toggle-input">
-                        <span class="toggle-slider"></span>
-                        <span class="toggle-text">{{ $t('reasoning_mode') }}</span>
-                    </label>
-                </div>
             </div>
             <button class="send-button" @click="handleSubmit" :disabled="!isSendEnabled" :aria-label="buttonLabel">
                 <div>
@@ -31,6 +24,7 @@
 import { defineComponent } from 'vue'
 import { useMessageStore } from '@/stores/messageStore';
 import { PaperAirplaneIcon } from '@heroicons/vue/24/solid'
+import { useConversationSession } from '@/composables/useConversationSession'
 
 export default defineComponent({
     name: 'QuestionInput',
@@ -41,6 +35,7 @@ export default defineComponent({
         return {
             inputValue: '',
             messageStore: useMessageStore(),
+            conversationSession: useConversationSession(),
             baseScrollHeight: 0
         };
     },
@@ -106,7 +101,8 @@ export default defineComponent({
                 this.$refs.textAreaRef.style.height = 'auto';
             }
 
-            await this.messageStore.sendMessage(text);
+            const sessionId = this.conversationSession.ensureSession(text);
+            await this.messageStore.sendMessage(text, sessionId);
         },
         addNewline(e) {
             e.preventDefault();

@@ -148,6 +148,7 @@ export default defineComponent({
   flex-direction: column;
   width: 100%;
   gap: var(--spacing-xl);
+  padding-top: calc(var(--spacing-xl) + var(--spacing-md));
 }
 
 .scroll-sentinel {
@@ -171,10 +172,9 @@ export default defineComponent({
   background-color: var(--color-icon-bg);
   border-radius: 50%;
   position: fixed;
-  bottom: 200px;
-  left: 50%;
+  bottom: 170px;
+  right: calc(50vw - 260px /2);
   cursor: pointer;
   padding: 4px;
-  right: 50%;
 }
 </style>

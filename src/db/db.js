@@ -44,3 +44,14 @@ export async function fetchSegmentById(
     }
 
 }
+
+export async function fetchConversationMessages(sessionId) {
+    const { data, error } = await supabase
+        .from('ai_chat_memory')
+        .select('id, session_id, input, response, creation_date, documents, segments')
+        .eq('session_id', sessionId)
+        .order('creation_date', { ascending: true })
+
+    if (error) throw new Error(error.message ?? 'Unable to load conversation history')
+    return data ?? []
+}
