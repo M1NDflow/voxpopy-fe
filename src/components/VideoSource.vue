@@ -1,23 +1,6 @@
 <template>
     <div class="video-source">
-        <div class="video-title-speaker">
-            <h3>
-                <template v-if="seg?.speaker_url">
-                    <a :href="seg.speaker_url" class="speaker-link" target="_blank" rel="noopener noreferrer">
-                        {{ seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu' }}
-                    </a>
-                </template>
-                <template v-else>
-                    {{ seg?.cue_type === 'VOTING' ? 'Président(e)' : seg?.speaker_name || 'Inconnu' }}
-                </template>
-                ·
-            </h3>
-            <h3 class="video-title-datetime">{{ formatSegmentTime(seg?.seance_date, seg?.start_second) }} · </h3>
-            <h3 class="video-title-political-group">( {{ seg?.political_group || 'Inconnu' }} )</h3>
-        </div>
-        <div class="video-title">
-            <h3 class="video-title-seance">{{ video.title }} · </h3>
-        </div>
+        <VideoSegmentMeta :segment="seg" :title="video.title || ''" />
         <div class="video-card" @click="handleClick">
             <div class="video-info">
                 <div v-if="!!(seg?.speaker_image_url)" class="video-thumbnail">
@@ -36,13 +19,11 @@
 <script lang="ts">
 import { defineComponent, computed, onMounted } from 'vue'
 import { useVideoModalStore } from '@/stores/modalStore'
-import Pill from './Pill.vue'
-import { CalendarIcon, ClockIcon, UserIcon, TagIcon } from '@heroicons/vue/24/solid'
-import { formatSegmentTime, formatSegmentDate } from '@/types/enriched_segments'
+import VideoSegmentMeta from './VideoSegmentMeta.vue'
 
 export default defineComponent({
     name: 'VideoSource',
-    components: { Pill, CalendarIcon, ClockIcon, UserIcon, TagIcon },
+    components: { VideoSegmentMeta },
     props: {
         video: {
             type: Object,
@@ -69,12 +50,6 @@ export default defineComponent({
             store.openSegmentModal(segId.value)
         }
 
-        function formatDate(d?: Date | string | null) {
-            if (!d) return '—'
-            const dt = typeof d === 'string' ? new Date(d) : d
-            return dt.toLocaleDateString()
-        }
-
         onMounted(() => {
             const id = (props.video as any)?.id
             if (id) {
@@ -83,7 +58,7 @@ export default defineComponent({
             }
         })
 
-        return { seg, isLoading, prefetch, handleClick, formatDate, CalendarIcon, ClockIcon, UserIcon, TagIcon, formatSegmentTime, formatSegmentDate }
+        return { seg, isLoading, prefetch, handleClick }
     },
     methods: {
         handleClick() {
@@ -113,13 +88,6 @@ export default defineComponent({
     flex-direction: column;
 }
 
-.video-meta {
-    display: flex;
-    flex-direction: row;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs) 0px;
-}
-
 .video-card:hover {
     background-color: var(--color-surface-hover);
 }
@@ -127,13 +95,6 @@ export default defineComponent({
 .video-info {
     display: flex;
     flex-direction: row;
-    gap: var(--spacing-xs);
-}
-
-.video-title {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
     gap: var(--spacing-xs);
 }
 
@@ -160,38 +121,4 @@ export default defineComponent({
     display: block;
 }
 
-.video-title-datetime {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-subtitle1);
-    vertical-align: middle;
-}
-
-.video-title-speaker {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--spacing-xs);
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary-dark);
-    vertical-align: middle;
-}
-
-.speaker-link {
-    color: inherit;
-    text-decoration: none;
-}
-
-.speaker-link:hover,
-.speaker-link:focus-visible {
-    text-decoration: underline;
-}
-
-.video-title-political-group {
-    font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-subtitle1);
-    vertical-align: middle;
-}
 </style>
