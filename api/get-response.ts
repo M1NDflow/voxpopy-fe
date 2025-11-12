@@ -1,6 +1,11 @@
-export const maxDuration = 300;
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-export default async function handler(req: Request) {
+export const config = {
+    runtime: 'edge',
+    maxDuration: 300
+};
+
+export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== "POST") return new Response("Method Not Allowed", { status: 405 });
     const ac = new AbortController();
     const upstream = await fetch(process.env.VITE_API_BASE_URL + "/get-response", {
@@ -8,7 +13,7 @@ export default async function handler(req: Request) {
         headers: {
             "content-type": "application/json",
             "accept": "text/event-stream",
-            authorization: req.headers.get("authorization") || "",
+            authorization: req.headers.authorization,
         },
         body: req.body,
         signal: ac.signal,
