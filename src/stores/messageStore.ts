@@ -69,7 +69,8 @@ export const useMessageStore = defineStore('message', () => {
     const index = messages.value.findIndex(m => m.id === messageId);
 
     try {
-      await streamSSE(process.env.VITE_API_ENDPOINT, {
+      const endpoint = import.meta.env.VITE_API_ENDPOINT
+      await streamSSE(endpoint, {
         previous_messages: messages.value.length == 2 ? messages.value.slice(index - 1, index).map(m => m.corrected_text) : messages.value.slice(index - 2, index).map(m => m.corrected_text),
         input: text,
         session_id: sid,
