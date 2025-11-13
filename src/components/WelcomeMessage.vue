@@ -8,7 +8,7 @@
 
         <p>
             <a href="https://www.geneve.ch/autorites-administration/conseil-municipal/">
-                Le Conseil municipal de la Villede Genève
+                Le Conseil municipal de la Ville de Genève
             </a>
             est le parlement de la Ville de Genève. Il compte
             <a href="https://www.geneve.ch/autorites-administration/conseil-municipal/membres/">
@@ -19,7 +19,7 @@
 
         </p>
         <p>
-            Le projet Via Democratia vise à rendre ces débats plus accessibles afin de promouvoir notre démocratie. Ce
+            Le projet DemocratIA vise à rendre ces débats plus accessibles afin de promouvoir notre démocratie. Ce
             prototype couvre les séances de
             <a
                 href="https://www.geneve.ch/autorites-administration/conseil-municipal/seances-plenieres/session-04-02-2025">février</a>
