@@ -3,7 +3,7 @@
     <div class="sidebar-content">
       <div class="sidebar-header">
         <h2>
-          ViaDemocratia
+          DemocratIA
           <span class="alpha-tag">Beta</span>
         </h2>
         <ResetButton />

@@ -138,7 +138,6 @@ export default defineComponent({
     /* Account for wrapper padding */
     font-size: 0.9375rem;
     color: var(--color-text);
-    background: transparent;
     resize: none;
     line-height: 1.5;
     padding: 0;

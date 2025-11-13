@@ -3,18 +3,20 @@
     <p v-if="showDate && dateLabel" class="video-date">{{ dateLabel }}</p>
     <div class="video-title-speaker">
       <h3 class="video-title-speaker">
-        <template v-if="segment?.speaker_url">
-          <a :href="segment.speaker_url" class="speaker-link" target="_blank" rel="noopener noreferrer">
+        <span class="speaker-badge"
+          :class="{ 'is-clickable': !!segment?.speaker_url, 'is-static': !segment?.speaker_url }">
+          <template v-if="segment?.speaker_url">
+            <a :href="segment.speaker_url" class="speaker-link" target="_blank" rel="noopener noreferrer">
+              {{ speakerLabel }}
+            </a>
+          </template>
+          <template v-else>
             {{ speakerLabel }}
-          </a>
-        </template>
-        <template v-else>
-          {{ speakerLabel }}
-        </template>
-        ·
+          </template>
+        </span>
       </h3>
       <h3 class="video-title-datetime">
-        {{ formatSegmentTime(segment?.seance_date, segment?.start_second) }} ·
+        · {{ formatSegmentTime(segment?.seance_date, segment?.start_second) }} ·
       </h3>
       <h3 class="video-title-political-group">
         ( {{ segment?.political_group || 'Inconnu' }} )
@@ -127,5 +129,32 @@ export default defineComponent({
 .speaker-link:hover,
 .speaker-link:focus-visible {
   text-decoration: underline;
+}
+
+.speaker-badge {
+  border: 1px solid currentColor;
+  border-radius: var(--border-radius-sm);
+  padding: 2px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background-color var(--transition-fast);
+}
+
+.speaker-badge.is-clickable {
+  cursor: pointer;
+}
+
+.speaker-badge.is-clickable:hover,
+.speaker-badge.is-clickable:focus-within {
+  background-color: rgba(180, 148, 101, 0.05);
+}
+
+.speaker-badge.is-static {
+  border-color: transparent;
+  padding: 0;
+  color: rgba(127, 127, 127, 0.93);
+  font-weight: var(--font-weight-light);
+  cursor: default;
 }
 </style>
