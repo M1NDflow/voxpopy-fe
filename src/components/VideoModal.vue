@@ -15,25 +15,11 @@
 
                             <!-- Content -->
                             <template v-if="seg">
-                                <h2 class="video-title">{{ seg.title || 'Segment' }}</h2>
-
+                                <VideoSegmentMeta :segment="seg" :title="seg.title || ''" :show-date="true" />
                                 <div class="video-player-wrapper">
                                     <mux-player :playback-id="seg.playback_id" :start-time="seg.start_second"
                                         accent-color="var(--color-primary-dark)" />
                                 </div>
-
-                                <div class="video-meta">
-                                    <Pill :icon="CalendarIcon" tag="Séance"
-                                        :description="formatSegmentDate(seg.seance_date)" />
-                                    <Pill :icon="ClockIcon" tag="Début de la séance"
-                                        :description="formatSegmentTime(seg.seance_date)" />
-                                    <Pill v-if="seg.cue_type != 'SPEECH' || seg.speaker_name" :icon="UserIcon"
-                                        tag="Intervenant"
-                                        :description="seg.cue_type === 'VOTING' || seg.cue_type === 'CHAIR_FLOOR_CUE' ? 'Président(e)' : seg.speaker_name || 'Inconnu'" />
-                                    <Pill v-if="seg.political_group" :icon="TagIcon" tag="Groupe politique"
-                                        :description="seg.political_group || 'Inconnu'" />
-                                </div>
-
                                 <div class="transcript-section">
                                     <div class="transcript-header">
                                         <h3>Transcript</h3>
@@ -67,13 +53,12 @@ import { defineComponent } from 'vue'
 import { useVideoModalStore } from '@/stores/modalStore'
 import type { EnrichedSegment } from '@/types/enriched_segments'
 import { CalendarIcon, UserIcon, TagIcon, ClockIcon } from '@heroicons/vue/24/solid'
-import Pill from './Pill.vue'
-import { formatSegmentDate, formatSegmentTime } from '@/types/enriched_segments'
+import VideoSegmentMeta from './VideoSegmentMeta.vue'
 import '@mux/mux-player'
 
 export default defineComponent({
     name: 'VideoModal',
-    components: { Pill, CalendarIcon, UserIcon, TagIcon, ClockIcon },
+    components: { CalendarIcon, UserIcon, TagIcon, ClockIcon, VideoSegmentMeta },
     props: {
         visible: { type: Boolean, required: true }
     },
@@ -94,9 +79,6 @@ export default defineComponent({
         hasError(): boolean {
             return !!(this.videoModalStore.segError[this.segmentId] ?? false)
         }
-    },
-    setup() {
-        return { CalendarIcon, UserIcon, TagIcon, ClockIcon, formatSegmentDate, formatSegmentTime }
     },
     watch: {
         visible: {
@@ -183,6 +165,7 @@ export default defineComponent({
 
 .video-player-wrapper {
     width: 100%;
+    margin-top: var(--spacing-md);
     aspect-ratio: 16 / 9;
     padding-bottom: var(--spacing-md);
 }

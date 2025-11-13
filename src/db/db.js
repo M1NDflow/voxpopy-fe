@@ -15,6 +15,8 @@ export async function fetchSegmentById(
       speaker:speaker (
         full_name,
         political_party,
+        image_url,
+        url,
         party_row:political_party ( party )
       )
     `, { count: 'exact' })
@@ -31,6 +33,8 @@ export async function fetchSegmentById(
         context_aware_summary: data.context_aware_summary,
         seance_date: data.seance?.datetime ? new Date(data.seance.datetime) : null,
         speaker_name: data.speaker?.full_name ?? '',
+        speaker_image_url: data.speaker?.image_url ?? '',
+        speaker_url: data.speaker?.url ?? '',
         political_group: data.speaker?.party_row?.party ?? '',
         cue_type: data.cue_type ?? '',
         start_second: data.start_seconds ?? 0,
@@ -39,4 +43,15 @@ export async function fetchSegmentById(
         playback_id: data.seance?.playback_id ?? null,
     }
 
+}
+
+export async function fetchConversationMessages(sessionId) {
+    const { data, error } = await supabase
+        .from('ai_chat_memory')
+        .select('id, session_id, input, response, creation_date, documents, segments')
+        .eq('session_id', sessionId)
+        .order('creation_date', { ascending: true })
+
+    if (error) throw new Error(error.message ?? 'Unable to load conversation history')
+    return data ?? []
 }

@@ -21,6 +21,7 @@
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-size-xxs: 0.6rem;
   --font-size-xs: 0.8rem;
+  --font-size-sm: 0.9rem;
   --font-size-base: 1rem;
   --font-size-lg: 1.125rem;
   --font-size-xl: 1.25rem;
@@ -92,6 +93,10 @@ p {
   margin: 0;
 }
 
+a {
+  color: var(--color-primary-dark);
+  text-decoration: none;
+}
 
 /* Buttons */
 button {

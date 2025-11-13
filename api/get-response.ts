@@ -1,9 +1,4 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
-
-export const config = {
-    runtime: 'edge',
-    maxDuration: 300
-};
+export const maxDuration = 300
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (req.method !== "POST") return new Response("Method Not Allowed", { status: 405 });
