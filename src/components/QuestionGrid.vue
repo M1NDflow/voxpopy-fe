@@ -1,15 +1,15 @@
 <template>
     <div class="question-grid">
         <QuestionCard :icon="CalendarIcon" color="#FBA028"
-            @select="send('Quel parti et quel intervenant a traité la motion concernant le pont du mont blanc ?')">
-            Quel parti et quel intervenant a traité la motion concernant le pont du mont blanc ?
+            @select="send('Quels partis et quels intervenants ont traité la motion concernant le pont du Mont-Blanc ?')">
+            Quels partis et quels intervenants ont traité la motion concernant le pont du Mont-Blanc ?
         </QuestionCard>
         <QuestionCard :icon="MapIcon" color="#FBA028" @select="send('Parle-moi du plan directeur communal 2040')">
             Parle-moi du plan directeur communal 2040
         </QuestionCard>
         <QuestionCard :icon="TruckIcon" color="#FBA028"
-            @select="send('Quel est la position des partis sur la mobilité douce ?')">
-            Quel est la position des partis sur la mobilité douce ?
+            @select="send('Quelle est la position des partis sur la mobilité douce ?')">
+            Quelle est la position des partis sur la mobilité douce ?
         </QuestionCard>
         <QuestionCard :icon="UserGroupIcon" color="#FBA028"
             @select="send('Quelle est la politique des Verts dernièrement ?')">
