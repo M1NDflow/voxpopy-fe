@@ -3,7 +3,7 @@
     <div class="sidebar-content">
       <div class="sidebar-header">
         <h2>
-          <span>
+          <span class="title">
             Democrat
             <span class="bold">IA</span>
           </span>
@@ -130,5 +130,9 @@ h3 {
 
 .bold {
   font-weight: var(--font-weight-bold);
+}
+
+.title {
+  display: flex;
 }
 </style>
