@@ -16,10 +16,10 @@
         </span>
       </h3>
       <h3 class="video-title-datetime">
-        · {{ formatSegmentTime(segment?.seance_date, segment?.start_second) }} ·
+        · {{ formatSegmentTime(segment?.seance_date, segment?.start_second) }}
       </h3>
-      <h3 class="video-title-political-group">
-        ( {{ segment?.political_group || 'Inconnu' }} )
+      <h3 v-if="segment.cue_type !== 'VOTING'" class="video-title-political-group">
+        · ( {{ segment?.political_group || 'Inconnu' }} )
       </h3>
     </div>
     <div class="video-title">
