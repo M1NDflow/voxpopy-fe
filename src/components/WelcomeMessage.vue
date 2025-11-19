@@ -19,7 +19,7 @@
 
         </p>
         <p>
-            Le projet DemocratIA vise à rendre ces débats plus accessibles afin de promouvoir notre démocratie. Ce
+            Le projet democratIA vise à rendre ces débats plus accessibles afin de promouvoir notre démocratie. Ce
             prototype couvre les séances de
             <a
                 href="https://www.geneve.ch/autorites-administration/conseil-municipal/seances-plenieres/session-04-02-2025">février</a>

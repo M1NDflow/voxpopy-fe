@@ -4,7 +4,7 @@
       <div class="sidebar-header">
         <h2>
           <span class="title">
-            Democrat
+            democrat
             <span class="bold">IA</span>
           </span>
           <span class="alpha-tag">Beta</span>
