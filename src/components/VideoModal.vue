@@ -23,6 +23,10 @@
                                 <div class="transcript-section">
                                     <div class="transcript-header">
                                         <h3>Transcript</h3>
+                                        <button class="copy-button" @click="handleCopyTranscript">
+                                            <ClipboardDocumentIcon class="icon" />
+                                            <p>Copier la transcription</p>
+                                        </button>
                                     </div>
                                     <p class="transcript-text">
                                         {{ seg.transcription || '—' }}
@@ -41,6 +45,11 @@
                             </template>
 
                         </div>
+                        <transition name="snackbar-fade">
+                            <div v-if="snackbarVisible" class="snackbar">
+                                {{ snackbarMessage }}
+                            </div>
+                        </transition>
                     </div>
                 </transition>
             </div>
@@ -52,17 +61,24 @@
 import { defineComponent } from 'vue'
 import { useVideoModalStore } from '@/stores/modalStore'
 import type { EnrichedSegment } from '@/types/enriched_segments'
-import { CalendarIcon, UserIcon, TagIcon, ClockIcon } from '@heroicons/vue/24/solid'
+import { ClipboardDocumentIcon } from '@heroicons/vue/24/solid'
 import VideoSegmentMeta from './VideoSegmentMeta.vue'
 import '@mux/mux-player'
 
 export default defineComponent({
     name: 'VideoModal',
-    components: { CalendarIcon, UserIcon, TagIcon, ClockIcon, VideoSegmentMeta },
+    components: { ClipboardDocumentIcon, VideoSegmentMeta },
     props: {
         visible: { type: Boolean, required: true }
     },
     emits: ['close'],
+    data() {
+        return {
+            snackbarMessage: '',
+            snackbarVisible: false,
+            snackbarTimeout: null as number | null,
+        }
+    },
     computed: {
         videoModalStore(): ReturnType<typeof useVideoModalStore> {
             return useVideoModalStore()
@@ -96,6 +112,7 @@ export default defineComponent({
     },
     beforeUnmount() {
         window.removeEventListener('keydown', this.handleEscape as any)
+        if (this.snackbarTimeout) window.clearTimeout(this.snackbarTimeout)
     },
     methods: {
         handleEscape(e: KeyboardEvent) {
@@ -108,6 +125,23 @@ export default defineComponent({
             // close via store (clears modal.id) and notify parent
             this.videoModalStore.closeModal()
             this.$emit('close')
+        },
+        showSnackbar(message: string, duration = 2000) {
+            this.snackbarMessage = message
+            this.snackbarVisible = true
+
+            if (this.snackbarTimeout) window.clearTimeout(this.snackbarTimeout)
+            this.snackbarTimeout = window.setTimeout(() => {
+                this.snackbarVisible = false
+                this.snackbarTimeout = null
+            }, duration)
+        },
+        async handleCopyTranscript() {
+            const transcript = this.seg?.transcription
+            if (!transcript) return
+
+            await navigator.clipboard.writeText(transcript)
+            this.showSnackbar('Transcription copiée dans le presse-papiers')
         },
     },
 })
@@ -126,6 +160,12 @@ export default defineComponent({
     display: flex;
     justify-content: flex-end;
     z-index: 1000;
+}
+
+.icon {
+    width: 16px;
+    height: 16px;
+    color: var(--color-primary-dark);
 }
 
 .video-modal {
@@ -170,6 +210,22 @@ export default defineComponent({
     padding-bottom: var(--spacing-md);
 }
 
+.copy-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-primary-dark);
+}
+
+.copy-button:hover {
+    opacity: 0.7;
+}
+
 .video-meta {
     display: flex;
     flex-wrap: wrap;
@@ -183,7 +239,7 @@ export default defineComponent({
 
 .transcript-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     margin-bottom: var(--spacing-sm);
 }
@@ -191,11 +247,13 @@ export default defineComponent({
 .transcript-header h3 {
     margin: 0;
     font-size: 1rem;
+    font-weight: 700;
+
 }
 
 .transcript-actions {
     display: flex;
-    gap: var(--spacing-xs);
+    gap: 0px
 }
 
 .small-button {
@@ -232,5 +290,28 @@ export default defineComponent({
 .backdrop-fade-enter-from,
 .backdrop-fade-leave-to {
     opacity: 0;
+}
+
+.snackbar {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--color-text);
+    color: var(--color-bg, #fff);
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    font-size: 0.875rem;
+}
+
+.snackbar-fade-enter-active,
+.snackbar-fade-leave-active {
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.snackbar-fade-enter-from,
+.snackbar-fade-leave-to {
+    opacity: 0;
+    transform: translateY(10px);
 }
 </style>
