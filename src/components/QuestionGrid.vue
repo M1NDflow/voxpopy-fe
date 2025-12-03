@@ -1,8 +1,8 @@
 <template>
     <div class="question-grid">
         <QuestionCard :icon="CalendarIcon" color="#FBA028"
-            @select="send('Quels partis et intervenants ont débattus de la motion concernant le pont du Mont-Blanc ?')">
-            Quels partis et intervenants ont débattus de la motion concernant le pont du Mont-Blanc ?
+            @select="send('Quels objets ont été débattus dans la session de février ?')">
+            Quels objets ont été débattus dans la session de février ?
         </QuestionCard>
         <QuestionCard :icon="MapIcon" color="#FBA028" @select="send('Parle-moi du plan directeur communal 2040')">
             Parle-moi du plan directeur communal 2040
@@ -12,8 +12,8 @@
             Quelle est la position des partis sur la mobilité douce ?
         </QuestionCard>
         <QuestionCard :icon="UserGroupIcon" color="#FBA028"
-            @select="send('Quels thèmes sont les plus importants pour les élus des Verts ?')">
-            Quels thèmes sont les plus importants pour les élus des Verts ?
+            @select="send('Résume-moi les trois dernières interventions de Mr Alfonso Gomez')">
+            Résume-moi les trois dernières interventions de Mr Alfonso Gomez
         </QuestionCard>
     </div>
 </template>
