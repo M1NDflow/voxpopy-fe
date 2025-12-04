@@ -3,7 +3,10 @@
     <div class="sidebar-content">
       <div class="sidebar-header">
         <h2>
-          ViaDemocratia
+          <span class="title">
+            ViaDemocrat
+            <span class="bold">IA</span>
+          </span>
           <span class="alpha-tag">Beta</span>
         </h2>
         <ResetButton />
@@ -81,6 +84,7 @@ export default {
 .sidebar-header {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: var(--spacing-md);
   position: relative;
 }
@@ -122,5 +126,13 @@ h3 {
   color: var(--color-text-secondary);
   letter-spacing: 0.08em;
   margin: 0;
+}
+
+.bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.title {
+  display: flex;
 }
 </style>

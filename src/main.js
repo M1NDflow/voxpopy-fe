@@ -15,7 +15,7 @@ const i18n = createI18n({
             loading: "Chargement",
             ask_a_question: "Poser une question",
             reasoning_mode: "Mode raisonnement avancé",
-            disclaimer: "ViaDemocratia peut commettre des erreurs. Il est recommandé de vérifier les informations importantes. Les informations ne sont en aucun cas des conseils politiques"
+            disclaimer: "Le projet ViaDemocratIA peut commettre des erreurs. Il est recommandé de vérifier les informations importantes. Les informations ne sont en aucun cas des conseils politiques"
         }
     }
 })

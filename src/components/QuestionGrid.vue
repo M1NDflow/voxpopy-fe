@@ -1,19 +1,19 @@
 <template>
     <div class="question-grid">
-        <QuestionCard :icon="CalendarIcon" color="#094074"
-            @select="send('Quel parti et quel intervenant a traité la motion concernant le pont du mont blanc ?')">
-            Quel parti et quel intervenant a traité la motion concernant le pont du mont blanc ?
+        <QuestionCard :icon="CalendarIcon" color="#FBA028"
+            @select="send('Quels objets ont été débattus dans la session de février ?')">
+            Quels objets ont été débattus dans la session de février ?
         </QuestionCard>
         <QuestionCard :icon="MapIcon" color="#FBA028" @select="send('Parle-moi du plan directeur communal 2040')">
             Parle-moi du plan directeur communal 2040
         </QuestionCard>
-        <QuestionCard :icon="TruckIcon" color="#E83151"
-            @select="send('Quel est la position des partis sur la mobilité douce ?')">
-            Quel est la position des partis sur la mobilité douce ?
+        <QuestionCard :icon="TruckIcon" color="#FBA028"
+            @select="send('Quelle est la position des partis sur la mobilité douce ?')">
+            Quelle est la position des partis sur la mobilité douce ?
         </QuestionCard>
-        <QuestionCard :icon="UserGroupIcon" color="#0B6E4F"
-            @select="send('Quels est la politique des Verts dernièrement ?')">
-            Quels est la politique des Verts dernièrement ?
+        <QuestionCard :icon="UserGroupIcon" color="#FBA028"
+            @select="send('Résume-moi les trois dernières interventions de Mr Alfonso Gomez')">
+            Résume-moi les trois dernières interventions de Mr Alfonso Gomez
         </QuestionCard>
     </div>
 </template>
